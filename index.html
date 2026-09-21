@@ -6,15 +6,15 @@
 <title>WAI · Registro de sesión experimental</title>
 <style>
   :root {
-    --bg-main: #121113;
-    --bg-sidebar: #1E1B20;
-    --bg-card: #231F27;
+    --bg-main: #1D1D1B; /* Gris carbón ITI */
+    --bg-sidebar: #000000; /* Negro puro para fundir el logo */
+    --bg-card: #2B2A2C;
     --text-main: #FFFFFF;
-    --text-muted: #A19BA5;
-    --iti-magenta: #E6007E;
+    --text-muted: #B3B3B3;
+    --iti-magenta: #E6007E; /* Magenta oficial ITI */
     --iti-magenta-hover: #C5006A;
-    --border-color: #38343D;
-    --input-bg: #1A171D;
+    --border-color: #404040;
+    --input-bg: #151515;
     --success: #00E676;
   }
   
@@ -37,19 +37,32 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 2px solid var(--iti-magenta);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-left img {
+    height: 55px; /* Ajustado para el nuevo logo */
+    display: block;
   }
 
   .header-title {
     display: flex;
     align-items: baseline;
     gap: 10px;
+    border-left: 1px solid var(--border-color);
+    padding-left: 20px;
   }
 
   .header-title h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0;
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .header-title span {
@@ -130,7 +143,7 @@
   }
 
   .step-nav.active {
-    background-color: rgba(230, 0, 126, 0.1);
+    background-color: rgba(230, 0, 126, 0.15);
     color: var(--text-main);
   }
 
@@ -174,6 +187,7 @@
     margin-top: 0;
     font-size: 1.4rem;
     margin-bottom: 5px;
+    color: var(--iti-magenta);
   }
 
   .card > p {
@@ -241,7 +255,7 @@
 
   .order-btn.selected {
     border-color: var(--iti-magenta);
-    background-color: rgba(230, 0, 126, 0.1);
+    background-color: rgba(230, 0, 126, 0.15);
   }
 
   /* NAVEGACIÓN INFERIOR */
@@ -294,19 +308,21 @@
     text-align: center;
     cursor: pointer;
   }
-  .likert-item input { margin-bottom: 5px; }
+  .likert-item input { margin-bottom: 5px; accent-color: var(--iti-magenta); }
 
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="header-title">
-    <h1>WAI</h1>
-    <span>Registro de sesión experimental</span>
+  <div class="header-left">
+    <img src="logo_iti_nuevo_2.jpg" alt="Logo ITI">
+    <div class="header-title">
+      <h1>WAI</h1>
+      <span>Registro de sesión experimental</span>
+    </div>
   </div>
   <div class="header-actions">
-    <button class="btn">Tema</button>
     <button class="btn" onclick="exportarCSV()">Exportar CSV</button>
     <button class="btn btn-primary" onclick="location.reload()">+ Nuevo participante</button>
   </div>
@@ -430,7 +446,7 @@
         <p>Circuito de referencia física y atencional.</p>
 
         <div class="laps-container">
-          <h3 style="margin-top:0; font-size:1.1rem;">Registro por Vueltas</h3>
+          <h3 style="margin-top:0; font-size:1.1rem; color: var(--text-main);">Registro por Vueltas</h3>
           <table class="laps-table" id="table-base">
             <thead>
               <tr>
@@ -466,7 +482,7 @@
         <p>Evaluación con el primer wearable asignado.</p>
 
         <div class="laps-container">
-          <h3 style="margin-top:0; font-size:1.1rem;">Registro por Vueltas</h3>
+          <h3 style="margin-top:0; font-size:1.1rem; color: var(--text-main);">Registro por Vueltas</h3>
           <table class="laps-table" id="table-disp1">
             <thead>
               <tr>
@@ -512,7 +528,7 @@
 
         <div class="form-group" style="margin-top: 20px;">
           <label style="display:flex; align-items:center; gap:10px;">
-            <input type="checkbox" id="disp1_flag" style="width:20px; height:20px;">
+            <input type="checkbox" id="disp1_flag" style="width:20px; height:20px; accent-color: var(--iti-magenta);">
             Daño o irritación cutánea visible (Bandera de seguridad)
           </label>
         </div>
@@ -532,7 +548,7 @@
 
         <!-- Idéntico al Paso 3, cambiando IDs a disp2 -->
         <div class="laps-container">
-          <h3 style="margin-top:0; font-size:1.1rem;">Registro por Vueltas</h3>
+          <h3 style="margin-top:0; font-size:1.1rem; color: var(--text-main);">Registro por Vueltas</h3>
           <table class="laps-table" id="table-disp2">
             <thead>
               <tr>
@@ -578,7 +594,7 @@
 
         <div class="form-group" style="margin-top: 20px;">
           <label style="display:flex; align-items:center; gap:10px;">
-            <input type="checkbox" id="disp2_flag" style="width:20px; height:20px;">
+            <input type="checkbox" id="disp2_flag" style="width:20px; height:20px; accent-color: var(--iti-magenta);">
             Daño o irritación cutánea visible (Bandera de seguridad)
           </label>
         </div>
@@ -700,7 +716,7 @@
     
     return {
       colores: sumC / laps.length,
-      gestos: sumG, // Gestos totales sumados (o promediados, ajustado a tu preferencia experimental)
+      gestos: sumG, 
       tiempoPromedio: sumT / laps.length
     };
   }
@@ -772,7 +788,6 @@
 
   function guardarParticipante() {
     alert("Participante guardado temporalmente en la sesión. No olvides Exportar a CSV al finalizar.");
-    // Aquí iría la lógica de push a savedData[] para el CSV final.
   }
 
   function exportarCSV() {
