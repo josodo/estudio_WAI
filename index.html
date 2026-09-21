@@ -11,12 +11,23 @@
     --bg-card: #2B2A2C;
     --text-main: #FFFFFF;
     --text-muted: #B3B3B3;
-    --iti-orange: #E35205; /* Naranja corporativo del logo */
+    --iti-orange: #E35205;
     --iti-orange-hover: #C44502;
-    --iti-yellow: #F0A30A; /* Amarillo del logo para detalles */
+    --iti-yellow: #F0A30A;
     --border-color: #404040;
     --input-bg: #151515;
     --success: #00E676;
+  }
+
+  /* Variables del tema claro */
+  body.light-theme {
+    --bg-main: #F4F5F7;
+    --bg-sidebar: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --text-main: #1D1D1B;
+    --text-muted: #666666;
+    --border-color: #E2E8F0;
+    --input-bg: #F8FAFC;
   }
   
   body {
@@ -29,6 +40,7 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
   }
 
   /* HEADER */
@@ -39,23 +51,35 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid var(--iti-orange);
+    transition: background-color 0.3s;
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
   }
 
-  .header-left img {
-    height: 55px;
+  .logo-iti {
+    height: 110px; /* Aumentado un 200% respecto a los 55px anteriores */
     display: block;
+  }
+
+  .logo-tactix {
+    height: 60px;
+    display: block;
+  }
+
+  /* Ajuste de contraste para los logos JPG según el tema */
+  body:not(.light-theme) .logo-tactix {
+    filter: invert(1); /* Convierte el fondo blanco del JPG de TACTIX en negro para integrarlo en el tema oscuro */
   }
 
   .header-title {
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    flex-direction: column;
+    gap: 2px;
     border-left: 1px solid var(--border-color);
     padding-left: 20px;
   }
@@ -74,6 +98,7 @@
   .header-actions {
     display: flex;
     gap: 15px;
+    align-items: center;
   }
 
   .btn {
@@ -85,6 +110,10 @@
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s;
+  }
+
+  .btn:hover {
+    border-color: var(--iti-orange);
   }
 
   .btn-primary {
@@ -113,6 +142,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: background-color 0.3s;
   }
 
   .step-nav {
@@ -150,6 +180,7 @@
 
   .step-nav.active .circle {
     background-color: var(--iti-orange);
+    color: #FFF;
   }
 
   /* CONTENIDO */
@@ -182,6 +213,7 @@
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 30px;
+    transition: background-color 0.3s;
   }
 
   .card h2 {
@@ -227,6 +259,7 @@
     padding: 10px 12px;
     color: var(--text-main);
     font-family: inherit;
+    transition: background-color 0.3s, color 0.3s;
   }
 
   input:focus, select:focus, textarea:focus {
@@ -275,6 +308,7 @@
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 25px;
+    transition: background-color 0.3s;
   }
 
   .laps-table {
@@ -308,6 +342,7 @@
     flex: 1;
     text-align: center;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   .likert-item input { margin-bottom: 5px; accent-color: var(--iti-orange); }
 
@@ -317,13 +352,15 @@
 
 <header class="header">
   <div class="header-left">
-    <img src="logo_iti_nuevo.png" alt="Logo ITI">
+    <img src="logo_iti_nuevo_2.jpg" alt="Logo ITI" class="logo-iti">
+    <img src="tactix_black_rgb.jpg" alt="Logo TACTIX" class="logo-tactix">
     <div class="header-title">
       <h1>WAI</h1>
       <span>Registro de sesión experimental</span>
     </div>
   </div>
   <div class="header-actions">
+    <button class="btn" onclick="toggleTheme()">Tema</button>
     <button class="btn" onclick="exportarCSV()">Exportar CSV</button>
     <button class="btn btn-primary" onclick="location.reload()">+ Nuevo participante</button>
   </div>
@@ -636,14 +673,16 @@
 </div>
 
 <script>
+  function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+  }
+
   let currentOrder = 'AB';
   let lapsData = { base: [], disp1: [], disp2: [] };
   let savedData = [];
 
-  // Inicializar fecha de hoy
   document.getElementById('p_fecha').valueAsDate = new Date();
   
-  // Iniciar con 1 vuelta por defecto en cada fase
   window.onload = () => {
     addLap('base');
     addLap('disp1');
@@ -667,18 +706,15 @@
   }
 
   function goToStep(stepNumber) {
-    // Actualizar sidebar
     document.querySelectorAll('.step-nav').forEach(el => el.classList.remove('active'));
     let navBtn = document.getElementById(`nav-${stepNumber}`);
     navBtn.classList.add('active');
     navBtn.removeAttribute('disabled');
 
-    // Actualizar contenido
     document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
     document.getElementById(`step-${stepNumber}`).classList.add('active');
   }
 
-  // --- LÓGICA DE VUELTAS (LAPS) ---
   function addLap(phase) {
     lapsData[phase].push({ colores: '', gestos: '', tiempo: '' });
     renderLaps(phase);
@@ -717,12 +753,11 @@
     
     return {
       colores: sumC / laps.length,
-      gestos: sumG, // Gestos totales sumados
+      gestos: sumG,
       tiempoPromedio: sumT / laps.length
     };
   }
 
-  // --- CÁLCULO WAI ---
   const UMBRALES = { R_max: 10, Inc_max: 50, C_max: 4 };
 
   function calcularCuartil(p) {
@@ -739,20 +774,17 @@
     const evalDevice = (prefix, label) => {
       const avgs = getAverages(prefix);
       
-      // Wearability
       const crs = parseFloat(document.getElementById(`${prefix}_crs`).value) || 0;
       const subjWear = (1 - (crs / 20)) * 100;
       const gestosNetos = Math.max(0, avgs.gestos - baseAvgs.gestos);
       const objWear = Math.max(0, 100 * (1 - (gestosNetos / UMBRALES.R_max)));
       const wear = (subjWear + objWear) / 2;
 
-      // Acceptance
       const wearScale = parseFloat(document.getElementById(`${prefix}_wear`).value) || 1;
       const subjAcc = ((wearScale - 1) / 6) * 100;
       const foto = document.getElementById(`${prefix}_foto`).value;
       const acc = (foto === 'NC') ? subjAcc : (subjAcc + parseFloat(foto)) / 2;
 
-      // Cognition
       const nasa = parseFloat(document.getElementById(`${prefix}_nasa`).value) || 0;
       const incNasa = Math.max(0, nasa - baseNasa);
       const subjCog = Math.max(0, 100 * (1 - (incNasa / UMBRALES.Inc_max)));
@@ -760,11 +792,9 @@
       const objCog = Math.max(0, 100 * (1 - (costCol / UMBRALES.C_max)));
       const cog = (subjCog + objCog) / 2;
 
-      // UX
       const sus = parseFloat(document.getElementById(`${prefix}_sus`).value) || 0;
-      const ux = (sus + 100) / 2; // Simplificado
+      const ux = (sus + 100) / 2;
 
-      // Bandera
       const flag = document.getElementById(`${prefix}_flag`).checked ? " [! Bandera Piel]" : "";
 
       const perfil = `${calcularCuartil(wear)}${calcularCuartil(acc)}${calcularCuartil(cog)}${calcularCuartil(ux)}`;
