@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAI · Registro de sesión experimental</title>
+<style>
+  :root {
+    --bg-main: #000000;
+    --bg-card: #1A1A1A;
+    --text-main: #F5F5F5;
+    --text-muted: #A0A0A0;
+    --iti-orange: #E85D04;
+    --iti-yellow: #FFBA08;
+    --border-color: #333333;
+    --input-bg: #2A2A2A;
+  }
+  
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  .header {
+    background-color: var(--bg-main);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--iti-orange);
+  }
+
+  .header img {
+    height: 50px;
+    margin-right: 20px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin: 0;
+    color: var(--text-main);
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  fieldset {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  legend {
+    background: var(--iti-orange);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--iti-yellow);
+    font-size: 0.95rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--iti-yellow);
+  }
+
+  .likert-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--input-bg);
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+  }
+
+  .likert-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 20%;
+  }
+
+  .likert-option input[type="radio"] {
+    accent-color: var(--iti-orange);
+    width: 18px;
+    height: 18px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .likert-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .likert-label strong {
+    color: var(--text-main);
+    font-size: 1rem;
+  }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    background-color: var(--iti-orange);
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 20px;
+  }
+
+  .btn-submit:hover {
+    background-color: var(--iti-yellow);
+    color: var(--bg-main);
+  }
+
+  .results-panel {
+    display: none;
+    background: var(--bg-card);
+    border: 2px solid var(--iti-yellow);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img src="logo_iti_nuevo.jpg" alt="Logo ITI">
+  <h1>WAI · Registro de sesión</h1>
+</header>
+
+<div class="container">
+  <form id="wai-form">
+    
+    <!-- DATOS DEL PARTICIPANTE -->
+    <fieldset>
+      <legend>1. Datos del Participante</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="participante_id">ID Participante</label>
+          <input type="text" id="participante_id" required>
+        </div>
+        <div class="form-group">
+          <label for="orden_dispositivos">Orden Contrabalanceado</label>
+          <select id="orden_dispositivos" required>
+            <option value="A_B">BASE → Disp. A → Disp. B</option>
+            <option value="B_A">BASE → Disp. B → Disp. A</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="mano_dominante">Mano Dominante</label>
+          <select id="mano_dominante" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="diestra">Diestra</option>
+            <option value="zurda">Zurda</option>
+            <option value="ambidextra">Ambidextra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="genero">Género</label>
+          <select id="genero" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="no_binario">No binario</option>
+            <option value="prefiero_no_responder">Prefiero no responder</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Experiencia con Wearables</label>
+        <div class="likert-container">
+          <div class="likert-option">
+            <input type="radio" name="exp_wearables" id="exp_1" value="1" required>
+            <label for="exp_1" class="likert-label"><strong>1</strong><br>Ninguna</label>
+          </div>
+          <div class="likert-option">
+            <input type="radio" name="exp_wearables" id="exp_2" value="2">
+            <label for="exp_2" class="likert-label"><strong>2</strong></label>
+          </div>
+          <div class="likert-option">
+            <input type="radio" name="exp_wearables" id="exp_3" value="3">
+            <label for="exp_3" class="likert-label"><strong>3</strong></label>
+          </div>
+          <div class="likert-option">
+            <input type="radio" name="exp_wearables" id="exp_4" value="4">
+            <label for="exp_4" class="likert-label"><strong>4</strong></label>
+          </div>
+          <div class="likert-option">
+            <input type="radio" name="exp_wearables" id="exp_5" value="5">
+            <label for="exp_5" class="likert-label"><strong>5</strong><br>A diario</label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- FASE BASE -->
+    <fieldset>
+      <legend>2. Fase BASE (Sin dispositivo)</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="base_nasa">Puntuación NASA-TLX (0-100)</label>
+          <input type="number" id="base_nasa" min="0" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="base_colores">Aciertos Tarea Colores (Promedio)</label>
+          <input type="number" id="base_colores" step="0.1" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="base_gestos">Gestos de incomodidad (Reposo)</label>
+          <input type="number" id="base_gestos" min="0" required>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- DISPOSITIVO A -->
+    <fieldset>
+      <legend>3. Dispositivo A</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="da_sus">Puntuación SUS (0-100)</label>
+          <input type="number" id="da_sus" min="0" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="da_crs">CRS Físico (Media 0-20)</label>
+          <input type="number" id="da_crs" step="0.1" min="0" max="20" required>
+        </div>
+        <div class="form-group">
+          <label for="da_wear">WEAR Scale (Media 1-7)</label>
+          <input type="number" id="da_wear" step="0.1" min="1" max="7" required>
+        </div>
+        <div class="form-group">
+          <label for="da_nasa">Puntuación NASA-TLX (0-100)</label>
+          <input type="number" id="da_nasa" min="0" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="da_colores">Aciertos Tarea Colores (Promedio)</label>
+          <input type="number" id="da_colores" step="0.1" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="da_gestos">Gestos de incomodidad totales</label>
+          <input type="number" id="da_gestos" min="0" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="da_foto">Permiso de Foto (Acceptance Obj)</label>
+        <select id="da_foto" required>
+          <option value="100">Doy permiso en abierto y etiquetado (100)</option>
+          <option value="67">Doy permiso en privado/empresa (67)</option>
+          <option value="0">No doy permiso (0)</option>
+          <option value="NC">No concluyente (Depende de la foto)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Banderas de Seguridad (Marcar si aplican)</label>
+        <label style="color: var(--text-main); font-weight: normal;">
+          <input type="checkbox" id="da_flag_piel"> Daño o irritación cutánea visible
+        </label>
+      </div>
+    </fieldset>
+
+    <!-- DISPOSITIVO B -->
+    <fieldset>
+      <legend>4. Dispositivo B</legend>
+      <!-- Se replican los mismos campos que en A, cambiando IDs a db_ -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="db_sus">Puntuación SUS (0-100)</label>
+          <input type="number" id="db_sus" min="0" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="db_crs">CRS Físico (Media 0-20)</label>
+          <input type="number" id="db_crs" step="0.1" min="0" max="20" required>
+        </div>
+        <div class="form-group">
+          <label for="db_wear">WEAR Scale (Media 1-7)</label>
+          <input type="number" id="db_wear" step="0.1" min="1" max="7" required>
+        </div>
+        <div class="form-group">
+          <label for="db_nasa">Puntuación NASA-TLX (0-100)</label>
+          <input type="number" id="db_nasa" min="0" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="db_colores">Aciertos Tarea Colores (Promedio)</label>
+          <input type="number" id="db_colores" step="0.1" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="db_gestos">Gestos de incomodidad totales</label>
+          <input type="number" id="db_gestos" min="0" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="db_foto">Permiso de Foto (Acceptance Obj)</label>
+        <select id="db_foto" required>
+          <option value="100">Doy permiso en abierto y etiquetado (100)</option>
+          <option value="67">Doy permiso en privado/empresa (67)</option>
+          <option value="0">No doy permiso (0)</option>
+          <option value="NC">No concluyente (Depende de la foto)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Banderas de Seguridad (Marcar si aplican)</label>
+        <label style="color: var(--text-main); font-weight: normal;">
+          <input type="checkbox" id="db_flag_piel"> Daño o irritación cutánea visible
+        </label>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="btn-submit">Guardar y Calcular Perfil WAI</button>
+  </form>
+
+  <div id="results" class="results-panel">
+    <h2 style="color: var(--iti-yellow); margin-top: 0;">Perfil Calculado</h2>
+    <p><strong>Dispositivo A:</strong> <span id="res_a"></span></p>
+    <p><strong>Dispositivo B:</strong> <span id="res_b"></span></p>
+    <button onclick="exportarCSV()" class="btn-submit" style="background-color: var(--border-color);">Exportar Sesión a CSV</button>
+  </div>
+</div>
+
+<script>
+  // Umbrales de anclaje para objetivas (ajustables según calibración piloto)
+  const UMBRALES = {
+    R_max: 10,     // Máximo de gestos netos inaceptable
+    Inc_max: 50,   // Incremento NASA-TLX inaceptable
+    C_max: 4       // Coste de colores inaceptable
+  };
+
+  let lastSavedData = null;
+
+  function calcularCuartil(puntuacion) {
+    if (puntuacion >= 75) return 'A';
+    if (puntuacion >= 50) return 'B';
+    if (puntuacion >= 25) return 'C';
+    return 'D';
+  }
+
+  function evaluarDispositivo(prefijo, baseNasa, baseColores, baseGestos) {
+    // 1. Wearability
+    const crs = parseFloat(document.getElementById(`${prefijo}_crs`).value);
+    const subjWear = (1 - (crs / 20)) * 100;
+    
+    const gestos = parseFloat(document.getElementById(`${prefijo}_gestos`).value);
+    const gestosNetos = Math.max(0, gestos - baseGestos);
+    const objWear = Math.max(0, 100 * (1 - (gestosNetos / UMBRALES.R_max)));
+    const wearability = (subjWear + objWear) / 2;
+
+    // 2. Acceptance
+    const wear = parseFloat(document.getElementById(`${prefijo}_wear`).value);
+    const subjAcc = ((wear - 1) / 6) * 100;
+    
+    const fotoVal = document.getElementById(`${prefijo}_foto`).value;
+    let acceptance = 0;
+    if (fotoVal === 'NC') {
+      acceptance = subjAcc; // Recae 100% en subjetiva si no es concluyente
+    } else {
+      acceptance = (subjAcc + parseFloat(fotoVal)) / 2;
+    }
+
+    // 3. Cognition
+    const nasa = parseFloat(document.getElementById(`${prefijo}_nasa`).value);
+    const incrementoNasa = Math.max(0, nasa - baseNasa);
+    const subjCog = Math.max(0, 100 * (1 - (incrementoNasa / UMBRALES.Inc_max)));
+
+    const colores = parseFloat(document.getElementById(`${prefijo}_colores`).value);
+    const costeColores = Math.max(0, baseColores - colores);
+    const objCog = Math.max(0, 100 * (1 - (costeColores / UMBRALES.C_max)));
+    const cognition = (subjCog + objCog) / 2;
+
+    // 4. UX (Simplificado para el prototipo asumiendo eficiencia ideal)
+    const sus = parseFloat(document.getElementById(`${prefijo}_sus`).value);
+    const ux = (sus + 100) / 2; 
+
+    // Banderas
+    const flagPiel = document.getElementById(`${prefijo}_flag_piel`).checked;
+
+    return {
+      perfil: `${calcularCuartil(wearability)}${calcularCuartil(acceptance)}${calcularCuartil(cognition)}${calcularCuartil(ux)}`,
+      flag: flagPiel ? " [! PIEL]" : ""
+    };
+  }
+
+  document.getElementById('wai-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const baseNasa = parseFloat(document.getElementById('base_nasa').value);
+    const baseColores = parseFloat(document.getElementById('base_colores').value);
+    const baseGestos = parseFloat(document.getElementById('base_gestos').value);
+
+    const resA = evaluarDispositivo('da', baseNasa, baseColores, baseGestos);
+    const resB = evaluarDispositivo('db', baseNasa, baseColores, baseGestos);
+
+    document.getElementById('res_a').innerText = resA.perfil + resA.flag;
+    document.getElementById('res_b').innerText = resB.perfil + resB.flag;
+    document.getElementById('results').style.display = 'block';
+
+    // Preparar objeto para exportación CSV
+    lastSavedData = {
+      ID: document.getElementById('participante_id').value,
+      Mano: document.getElementById('mano_dominante').value,
+      Genero: document.getElementById('genero').value,
+      Experiencia: document.querySelector('input[name="exp_wearables"]:checked').value,
+      Perfil_A: resA.perfil,
+      Perfil_B: resB.perfil
+    };
+  });
+
+  function exportarCSV() {
+    if (!lastSavedData) return;
+    const cabeceras = Object.keys(lastSavedData).join(',');
+    const valores = Object.values(lastSavedData).join(',');
+    const csvContent = "data:text/csv;charset=utf-8," + cabeceras + "\n" + valores;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `WAI_Participante_${lastSavedData.ID}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+</body>
+</html>
