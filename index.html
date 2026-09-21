@@ -6,13 +6,14 @@
 <title>WAI · Registro de sesión experimental</title>
 <style>
   :root {
-    --bg-main: #1D1D1B; /* Gris carbón ITI */
-    --bg-sidebar: #000000; /* Negro puro para fundir el logo */
+    --bg-main: #1D1D1B;
+    --bg-sidebar: #000000;
     --bg-card: #2B2A2C;
     --text-main: #FFFFFF;
     --text-muted: #B3B3B3;
-    --iti-magenta: #E6007E; /* Magenta oficial ITI */
-    --iti-magenta-hover: #C5006A;
+    --iti-orange: #E35205; /* Naranja corporativo del logo */
+    --iti-orange-hover: #C44502;
+    --iti-yellow: #F0A30A; /* Amarillo del logo para detalles */
     --border-color: #404040;
     --input-bg: #151515;
     --success: #00E676;
@@ -37,7 +38,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid var(--iti-magenta);
+    border-bottom: 2px solid var(--iti-orange);
   }
 
   .header-left {
@@ -47,7 +48,7 @@
   }
 
   .header-left img {
-    height: 55px; /* Ajustado para el nuevo logo */
+    height: 55px;
     display: block;
   }
 
@@ -87,13 +88,13 @@
   }
 
   .btn-primary {
-    background-color: var(--iti-magenta);
-    border-color: var(--iti-magenta);
+    background-color: var(--iti-orange);
+    border-color: var(--iti-orange);
     color: white;
   }
 
   .btn-primary:hover {
-    background-color: var(--iti-magenta-hover);
+    background-color: var(--iti-orange-hover);
   }
 
   /* LAYOUT PRINCIPAL */
@@ -143,12 +144,12 @@
   }
 
   .step-nav.active {
-    background-color: rgba(230, 0, 126, 0.15);
+    background-color: rgba(227, 82, 5, 0.15);
     color: var(--text-main);
   }
 
   .step-nav.active .circle {
-    background-color: var(--iti-magenta);
+    background-color: var(--iti-orange);
   }
 
   /* CONTENIDO */
@@ -187,7 +188,7 @@
     margin-top: 0;
     font-size: 1.4rem;
     margin-bottom: 5px;
-    color: var(--iti-magenta);
+    color: var(--iti-orange);
   }
 
   .card > p {
@@ -230,7 +231,7 @@
 
   input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--iti-magenta);
+    border-color: var(--iti-orange);
   }
 
   /* SELECTOR DE ORDEN (CONTRABALANCEO) */
@@ -254,8 +255,8 @@
   }
 
   .order-btn.selected {
-    border-color: var(--iti-magenta);
-    background-color: rgba(230, 0, 126, 0.15);
+    border-color: var(--iti-orange);
+    background-color: rgba(227, 82, 5, 0.15);
   }
 
   /* NAVEGACIÓN INFERIOR */
@@ -308,7 +309,7 @@
     text-align: center;
     cursor: pointer;
   }
-  .likert-item input { margin-bottom: 5px; accent-color: var(--iti-magenta); }
+  .likert-item input { margin-bottom: 5px; accent-color: var(--iti-orange); }
 
 </style>
 </head>
@@ -316,7 +317,7 @@
 
 <header class="header">
   <div class="header-left">
-    <img src="logo_iti_nuevo_2.jpg" alt="Logo ITI">
+    <img src="logo_iti_nuevo.png" alt="Logo ITI">
     <div class="header-title">
       <h1>WAI</h1>
       <span>Registro de sesión experimental</span>
@@ -528,7 +529,7 @@
 
         <div class="form-group" style="margin-top: 20px;">
           <label style="display:flex; align-items:center; gap:10px;">
-            <input type="checkbox" id="disp1_flag" style="width:20px; height:20px; accent-color: var(--iti-magenta);">
+            <input type="checkbox" id="disp1_flag" style="width:20px; height:20px; accent-color: var(--iti-orange);">
             Daño o irritación cutánea visible (Bandera de seguridad)
           </label>
         </div>
@@ -594,7 +595,7 @@
 
         <div class="form-group" style="margin-top: 20px;">
           <label style="display:flex; align-items:center; gap:10px;">
-            <input type="checkbox" id="disp2_flag" style="width:20px; height:20px; accent-color: var(--iti-magenta);">
+            <input type="checkbox" id="disp2_flag" style="width:20px; height:20px; accent-color: var(--iti-orange);">
             Daño o irritación cutánea visible (Bandera de seguridad)
           </label>
         </div>
@@ -612,15 +613,15 @@
         <h2>Resumen y guardar</h2>
         <p>Perfiles WAI calculados basados en los datos introducidos.</p>
         
-        <div style="background-color: var(--input-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--iti-magenta); margin-bottom: 20px;">
+        <div style="background-color: var(--input-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--iti-orange); margin-bottom: 20px;">
           <h3 style="margin-top:0; color: var(--text-main);">Dispositivo A</h3>
-          <p style="font-size: 2rem; margin: 10px 0; font-weight: bold; color: var(--iti-magenta);" id="res_perfil_a">--</p>
+          <p style="font-size: 2rem; margin: 10px 0; font-weight: bold; color: var(--iti-orange);" id="res_perfil_a">--</p>
           <p id="res_detalles_a" style="color: var(--text-muted); margin:0; font-size: 0.9rem;"></p>
         </div>
 
-        <div style="background-color: var(--input-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--iti-magenta);">
+        <div style="background-color: var(--input-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--iti-orange);">
           <h3 style="margin-top:0; color: var(--text-main);">Dispositivo B</h3>
-          <p style="font-size: 2rem; margin: 10px 0; font-weight: bold; color: var(--iti-magenta);" id="res_perfil_b">--</p>
+          <p style="font-size: 2rem; margin: 10px 0; font-weight: bold; color: var(--iti-orange);" id="res_perfil_b">--</p>
           <p id="res_detalles_b" style="color: var(--text-muted); margin:0; font-size: 0.9rem;"></p>
         </div>
 
@@ -716,7 +717,7 @@
     
     return {
       colores: sumC / laps.length,
-      gestos: sumG, 
+      gestos: sumG, // Gestos totales sumados
       tiempoPromedio: sumT / laps.length
     };
   }
