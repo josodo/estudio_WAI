@@ -104,9 +104,46 @@
   /* NASA TLX SLIDERS */
   .nasa-tlx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 15px; }
   .slider-container { display: flex; flex-direction: column; gap: 8px; }
-  .slider-container label { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+  .slider-container label { font-size: 0.9rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
   .slider-container input[type="range"] { width: 100%; accent-color: var(--iti-orange); }
   .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+  .slider-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--iti-orange); border: 1px solid var(--iti-orange); border-radius: 10px; padding: 1px 8px; }
+
+  /* Slider NASA-TLX sin sesgo de anclaje: pista neutra propia, tirador oculto hasta el primer contacto */
+  input.nasa-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+    outline: none;
+    margin: 6px 0;
+  }
+  input.nasa-slider::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: transparent; }
+  input.nasa-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--iti-orange);
+    cursor: pointer;
+    margin-top: 0;
+    opacity: 1;
+    transition: opacity 0.15s;
+  }
+  input.nasa-slider::-moz-range-track { height: 6px; border-radius: 3px; background: var(--border-color); }
+  input.nasa-slider::-moz-range-progress { background: transparent; }
+  input.nasa-slider::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--iti-orange);
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.15s;
+  }
+  input.nasa-slider.untouched::-webkit-slider-thumb { opacity: 0; }
+  input.nasa-slider.untouched::-moz-range-thumb { opacity: 0; }
 
   /* FORMULARIOS GENÉRICOS */
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
@@ -125,6 +162,15 @@
 </style>
 </head>
 <body>
+
+<datalist id="tlx-ticks">
+  <option value="0"></option><option value="5"></option><option value="10"></option><option value="15"></option>
+  <option value="20"></option><option value="25"></option><option value="30"></option><option value="35"></option>
+  <option value="40"></option><option value="45"></option><option value="50"></option><option value="55"></option>
+  <option value="60"></option><option value="65"></option><option value="70"></option><option value="75"></option>
+  <option value="80"></option><option value="85"></option><option value="90"></option><option value="95"></option>
+  <option value="100"></option>
+</datalist>
 
 <header class="header">
   <div class="header-left">
@@ -220,18 +266,42 @@
         <h2>BASE (sin dispositivo)</h2>
         <p>Ejecución de referencia física y atencional.</p>
         
-        <div id="vueltas-base-container"></div>
-        <button class="btn btn-primary" onclick="addLap('base')" style="margin-bottom: 40px;">+ Añadir nueva vuelta</button>
+        <div id="vueltas-base-container" style="margin-bottom: 40px;"></div>
 
         <div class="lap-block" style="border-color: var(--iti-yellow);">
           <h3 style="color: var(--iti-yellow); margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Cuestionario NASA-TLX (Global de BASE)</h3>
+          <p style="margin-top:-10px; font-size: 0.8rem; color: var(--text-muted);">Raw TLX (RTLX): media no ponderada de las seis subescalas, sin la fase de comparación por pares del NASA-TLX original. Cada carril empieza sin marca; el tirador aparece al primer contacto.</p>
           <div class="nasa-tlx-grid">
-            <div class="slider-container"><label>Exigencia Mental</label><input type="range" min="0" max="100" value="50" id="base_nasa_mental"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Física</label><input type="range" min="0" max="100" value="50" id="base_nasa_fisica"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Temporal</label><input type="range" min="0" max="100" value="50" id="base_nasa_temporal"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Rendimiento</label><input type="range" min="0" max="100" value="50" id="base_nasa_rendimiento"><div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div></div>
-            <div class="slider-container"><label>Esfuerzo</label><input type="range" min="0" max="100" value="50" id="base_nasa_esfuerzo"><div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div></div>
-            <div class="slider-container"><label>Frustración</label><input type="range" min="0" max="100" value="50" id="base_nasa_frustracion"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
+            <div class="slider-container">
+              <label>Exigencia Mental <span class="slider-status" id="status-base_nasa_mental">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_mental">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Física <span class="slider-status" id="status-base_nasa_fisica">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_fisica">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Temporal <span class="slider-status" id="status-base_nasa_temporal">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_temporal">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Rendimiento <span class="slider-status" id="status-base_nasa_rendimiento">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_rendimiento">
+              <div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Esfuerzo <span class="slider-status" id="status-base_nasa_esfuerzo">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_esfuerzo">
+              <div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Frustración <span class="slider-status" id="status-base_nasa_frustracion">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="base_nasa_frustracion">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
           </div>
         </div>
 
@@ -248,27 +318,62 @@
         <h2>Primer dispositivo (<span class="dyn-disp-1">A</span>)</h2>
         <p>Ejecución con el primer wearable asignado.</p>
 
-        <div id="vueltas-disp1-container"></div>
-        <button class="btn btn-primary" onclick="addLap('disp1')" style="margin-bottom: 40px;">+ Añadir nueva vuelta</button>
+        <div id="vueltas-disp1-container" style="margin-bottom: 40px;"></div>
 
         <div class="lap-block" style="border-color: var(--iti-yellow);">
           <h3 style="color: var(--iti-yellow); margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Cuestionarios Globales (<span class="dyn-disp-1">A</span>)</h3>
           
           <h4 style="margin-bottom: 5px;">NASA-TLX</h4>
+          <p style="margin-top:0; font-size: 0.8rem; color: var(--text-muted);">Raw TLX (RTLX): media no ponderada de las seis subescalas, sin la fase de comparación por pares del NASA-TLX original. Cada carril empieza sin marca; el tirador aparece al primer contacto.</p>
           <div class="nasa-tlx-grid" style="margin-bottom: 30px;">
-            <div class="slider-container"><label>Exigencia Mental</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_mental"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Física</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_fisica"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Temporal</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_temporal"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Rendimiento</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_rendimiento"><div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div></div>
-            <div class="slider-container"><label>Esfuerzo</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_esfuerzo"><div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div></div>
-            <div class="slider-container"><label>Frustración</label><input type="range" min="0" max="100" value="50" id="disp1_nasa_frustracion"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
+            <div class="slider-container">
+              <label>Exigencia Mental <span class="slider-status" id="status-disp1_nasa_mental">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_mental">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Física <span class="slider-status" id="status-disp1_nasa_fisica">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_fisica">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Temporal <span class="slider-status" id="status-disp1_nasa_temporal">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_temporal">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Rendimiento <span class="slider-status" id="status-disp1_nasa_rendimiento">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_rendimiento">
+              <div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Esfuerzo <span class="slider-status" id="status-disp1_nasa_esfuerzo">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_esfuerzo">
+              <div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Frustración <span class="slider-status" id="status-disp1_nasa_frustracion">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp1_nasa_frustracion">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
           </div>
 
+          <div id="cuestionarios-disp1"></div>
+
+          <h4 style="margin: 30px 0 5px;">Colocación y manejo (UX objetiva)</h4>
           <div class="form-grid">
-            <div class="form-group"><label>SUS (Usabilidad 0-100)</label><input type="number" id="disp1_sus" min="0" max="100"></div>
-            <div class="form-group"><label>CRS Físico (Media 0-20)</label><input type="number" id="disp1_crs" step="0.1" min="0" max="20"></div>
-            <div class="form-group"><label>WEAR Scale (Media 1-7)</label><input type="number" id="disp1_wear" step="0.1" min="1" max="7"></div>
+            <div class="form-group"><label>Tiempo de autocolocación (seg.)</label><input type="number" id="disp1_ux_tiempo" step="0.1" min="0"></div>
+            <div class="form-group"><label>Errores durante la colocación</label><input type="number" id="disp1_ux_errores" min="0"></div>
+            <div class="form-group">
+              <label>Señal válida al primer intento</label>
+              <select id="disp1_ux_primerintento">
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Continuidad de señal durante el movimiento (%)</label><input type="number" id="disp1_ux_continuidad" min="0" max="100"></div>
           </div>
+
           <div class="form-group" style="margin-top: 20px;">
             <label>Permiso de Foto (Acceptance Obj)</label>
             <select id="disp1_foto">
@@ -299,27 +404,62 @@
         <h2>Segundo dispositivo (<span class="dyn-disp-2">B</span>)</h2>
         <p>Ejecución con el segundo wearable asignado.</p>
 
-        <div id="vueltas-disp2-container"></div>
-        <button class="btn btn-primary" onclick="addLap('disp2')" style="margin-bottom: 40px;">+ Añadir nueva vuelta</button>
+        <div id="vueltas-disp2-container" style="margin-bottom: 40px;"></div>
 
         <div class="lap-block" style="border-color: var(--iti-yellow);">
           <h3 style="color: var(--iti-yellow); margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Cuestionarios Globales (<span class="dyn-disp-2">B</span>)</h3>
           
           <h4 style="margin-bottom: 5px;">NASA-TLX</h4>
+          <p style="margin-top:0; font-size: 0.8rem; color: var(--text-muted);">Raw TLX (RTLX): media no ponderada de las seis subescalas, sin la fase de comparación por pares del NASA-TLX original. Cada carril empieza sin marca; el tirador aparece al primer contacto.</p>
           <div class="nasa-tlx-grid" style="margin-bottom: 30px;">
-            <div class="slider-container"><label>Exigencia Mental</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_mental"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Física</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_fisica"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Exigencia Temporal</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_temporal"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
-            <div class="slider-container"><label>Rendimiento</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_rendimiento"><div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div></div>
-            <div class="slider-container"><label>Esfuerzo</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_esfuerzo"><div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div></div>
-            <div class="slider-container"><label>Frustración</label><input type="range" min="0" max="100" value="50" id="disp2_nasa_frustracion"><div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div></div>
+            <div class="slider-container">
+              <label>Exigencia Mental <span class="slider-status" id="status-disp2_nasa_mental">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_mental">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Física <span class="slider-status" id="status-disp2_nasa_fisica">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_fisica">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Exigencia Temporal <span class="slider-status" id="status-disp2_nasa_temporal">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_temporal">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Rendimiento <span class="slider-status" id="status-disp2_nasa_rendimiento">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_rendimiento">
+              <div class="slider-labels"><span>Perfecto</span><span>Fracaso</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Esfuerzo <span class="slider-status" id="status-disp2_nasa_esfuerzo">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_esfuerzo">
+              <div class="slider-labels"><span>Muy bajo</span><span>Muy alto</span></div>
+            </div>
+            <div class="slider-container">
+              <label>Frustración <span class="slider-status" id="status-disp2_nasa_frustracion">Sin responder</span></label>
+              <input type="range" class="nasa-slider untouched" min="0" max="100" step="5" value="50" list="tlx-ticks" id="disp2_nasa_frustracion">
+              <div class="slider-labels"><span>Muy baja</span><span>Muy alta</span></div>
+            </div>
           </div>
 
+          <div id="cuestionarios-disp2"></div>
+
+          <h4 style="margin: 30px 0 5px;">Colocación y manejo (UX objetiva)</h4>
           <div class="form-grid">
-            <div class="form-group"><label>SUS (Usabilidad 0-100)</label><input type="number" id="disp2_sus" min="0" max="100"></div>
-            <div class="form-group"><label>CRS Físico (Media 0-20)</label><input type="number" id="disp2_crs" step="0.1" min="0" max="20"></div>
-            <div class="form-group"><label>WEAR Scale (Media 1-7)</label><input type="number" id="disp2_wear" step="0.1" min="1" max="7"></div>
+            <div class="form-group"><label>Tiempo de autocolocación (seg.)</label><input type="number" id="disp2_ux_tiempo" step="0.1" min="0"></div>
+            <div class="form-group"><label>Errores durante la colocación</label><input type="number" id="disp2_ux_errores" min="0"></div>
+            <div class="form-group">
+              <label>Señal válida al primer intento</label>
+              <select id="disp2_ux_primerintento">
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Continuidad de señal durante el movimiento (%)</label><input type="number" id="disp2_ux_continuidad" min="0" max="100"></div>
           </div>
+
           <div class="form-group" style="margin-top: 20px;">
             <label>Permiso de Foto (Acceptance Obj)</label>
             <select id="disp2_foto">
@@ -339,7 +479,7 @@
 
         <div class="bottom-nav">
           <button class="btn" onclick="goToStep(3)">← Anterior</button>
-          <button class="btn btn-primary" onclick="goToStep(5); calcularResultados();">Calcular Perfil WAI →</button>
+          <button class="btn btn-primary" onclick="irAResumen()">Calcular Perfil WAI →</button>
         </div>
       </div>
     </div>
@@ -412,7 +552,111 @@
 
   let lapsState = { base: [], disp1: [], disp2: [] };
 
-  window.onload = () => { addLap('base'); addLap('disp1'); addLap('disp2'); };
+  window.onload = () => {
+    addLap('base'); addLap('disp1'); addLap('disp2');
+    renderCuestionarios('disp1'); renderCuestionarios('disp2');
+    setupNasaSliders();
+  };
+
+  function setupNasaSliders() {
+    document.querySelectorAll('input.nasa-slider').forEach(el => {
+      el.dataset.touched = 'false';
+      el.addEventListener('input', () => {
+        el.dataset.touched = 'true';
+        el.classList.remove('untouched');
+        const status = document.getElementById(`status-${el.id}`);
+        if (status) status.remove();
+      });
+    });
+  }
+
+  // --- CUESTIONARIOS SUBJETIVOS POR ÍTEM (SUS, CRS, WEAR) ---
+
+  const SUS_ITEMS = [
+    "Creo que me gustaría usar este dispositivo con frecuencia.",
+    "Me pareció que el dispositivo era innecesariamente complejo.",
+    "Pensé que el dispositivo era fácil de usar.",
+    "Creo que necesitaría ayuda de una persona con conocimientos técnicos para poder usar este dispositivo.",
+    "Encontré que las distintas funciones de este dispositivo estaban bien integradas.",
+    "Pensé que había demasiada inconsistencia en este dispositivo.",
+    "Imagino que la mayoría de la gente aprendería a usar este dispositivo muy rápidamente.",
+    "Encontré el dispositivo muy incómodo/engorroso de usar.",
+    "Me sentí muy seguro/a usando el dispositivo.",
+    "Necesité aprender muchas cosas antes de poder manejarme con este dispositivo."
+  ];
+
+  const CRS_ITEMS = [
+    "Molestia o dolor en la zona donde se coloca el dispositivo",
+    "Sensación de que el dispositivo aprieta, pellizca o comprime",
+    "Peso percibido del dispositivo durante el movimiento",
+    "Interferencia del dispositivo con el movimiento natural",
+    "Calor o sudoración generados por el dispositivo"
+  ];
+
+  const WEAR_ITEMS = [
+    "Me sentiría cómodo/a llevando este dispositivo en público.",
+    "El aspecto de este dispositivo encaja con mi forma de vestir habitual.",
+    "No me preocuparía que otras personas notaran que llevo este dispositivo.",
+    "Llevaría este dispositivo en mi vida cotidiana, no solo en un laboratorio.",
+    "Este dispositivo no atrae una atención no deseada sobre mí.",
+    "Me sentiría orgulloso/a, no avergonzado/a, de llevar este dispositivo."
+  ];
+
+  function renderLikertBlock(name, index, question, scaleMin, scaleMax, minLabel, maxLabel) {
+    let opts = '';
+    for (let v = scaleMin; v <= scaleMax; v++) {
+      opts += `<label class="likert-item"><input type="radio" name="${name}" value="${v}"> ${v}</label>`;
+    }
+    return `
+      <div class="form-group" style="margin-bottom: 15px;">
+        <label>${index}. ${question}</label>
+        <div class="likert-group">${opts}</div>
+        <div class="slider-labels"><span>${minLabel}</span><span>${maxLabel}</span></div>
+      </div>`;
+  }
+
+  function renderCuestionarios(prefix) {
+    const container = document.getElementById(`cuestionarios-${prefix}`);
+    let html = `<h4 style="margin-bottom: 5px;">System Usability Scale (SUS)</h4>`;
+    html += `<p style="margin-top:0; font-size:0.8rem; color:var(--text-muted);">Escala de 1 (Totalmente en desacuerdo) a 5 (Totalmente de acuerdo). Ítems estándar (Brooke, 1996).</p>`;
+    SUS_ITEMS.forEach((q, i) => html += renderLikertBlock(`${prefix}_sus_i${i + 1}`, i + 1, q, 1, 5, 'Desacuerdo', 'Acuerdo'));
+
+    html += `<h4 style="margin: 25px 0 5px;">Comfort Rating Scale (CRS) — facetas físicas</h4>`;
+    html += `<p style="margin-top:0; font-size:0.8rem; color:var(--text-muted);">Escala de 0 (Nada) a 4 (Extremo). Ítems adaptados de Knight y Baber (2005); revisar la redacción frente al instrumento original antes de un uso definitivo.</p>`;
+    CRS_ITEMS.forEach((q, i) => html += renderLikertBlock(`${prefix}_crs_i${i + 1}`, i + 1, q, 0, 4, 'Nada', 'Extremo'));
+
+    html += `<h4 style="margin: 25px 0 5px;">WEAR Scale — aceptabilidad social</h4>`;
+    html += `<p style="margin-top:0; font-size:0.8rem; color:var(--text-muted);">Escala de 1 (Totalmente en desacuerdo) a 7 (Totalmente de acuerdo). Ítems adaptados de Kelly y Gilbert (2016); revisar la redacción frente al instrumento original antes de un uso definitivo.</p>`;
+    WEAR_ITEMS.forEach((q, i) => html += renderLikertBlock(`${prefix}_wear_i${i + 1}`, i + 1, q, 1, 7, 'Desacuerdo', 'Acuerdo'));
+
+    container.innerHTML = html;
+  }
+
+  function getRadioValue(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? parseFloat(el.value) : 0;
+  }
+
+  function getSUSScore(prefix) {
+    let sum = 0;
+    for (let i = 1; i <= 10; i++) {
+      const v = getRadioValue(`${prefix}_sus_i${i}`);
+      sum += (i % 2 === 1) ? (v - 1) : (5 - v);
+    }
+    return Math.max(0, sum) * 2.5;
+  }
+
+  function getCRSSum(prefix) {
+    let sum = 0;
+    for (let i = 1; i <= 5; i++) sum += getRadioValue(`${prefix}_crs_i${i}`);
+    return sum;
+  }
+
+  function getWearAvg(prefix) {
+    let sum = 0;
+    for (let i = 1; i <= 6; i++) sum += getRadioValue(`${prefix}_wear_i${i}`);
+    return sum / 6;
+  }
 
   function addLap(phase) {
     const lapIndex = lapsState[phase].length;
@@ -508,17 +752,33 @@
     return { colores: sumColores / numLaps, gestos: sumGestos };
   }
 
+  const NASA_TLX_KEYS = ['mental', 'fisica', 'temporal', 'rendimiento', 'esfuerzo', 'frustracion'];
+
   function getNasaScore(prefix) {
-    const mental = parseFloat(document.getElementById(`${prefix}_nasa_mental`).value) || 0;
-    const fisica = parseFloat(document.getElementById(`${prefix}_nasa_fisica`).value) || 0;
-    const temporal = parseFloat(document.getElementById(`${prefix}_nasa_temporal`).value) || 0;
-    const rendimiento = parseFloat(document.getElementById(`${prefix}_nasa_rendimiento`).value) || 0;
-    const esfuerzo = parseFloat(document.getElementById(`${prefix}_nasa_esfuerzo`).value) || 0;
-    const frustracion = parseFloat(document.getElementById(`${prefix}_nasa_frustracion`).value) || 0;
-    return (mental + fisica + temporal + rendimiento + esfuerzo + frustracion) / 6;
+    const sum = NASA_TLX_KEYS.reduce((acc, k) => acc + (parseFloat(document.getElementById(`${prefix}_nasa_${k}`).value) || 0), 0);
+    return sum / NASA_TLX_KEYS.length;
   }
 
-  const UMBRALES = { R_max: 10, Inc_max: 50, C_max: 4 };
+  function isNasaComplete(prefix) {
+    return NASA_TLX_KEYS.every(k => document.getElementById(`${prefix}_nasa_${k}`).dataset.touched === 'true');
+  }
+
+  function checkNasaCompleteness() {
+    const disp1Label = currentOrder === 'AB' ? 'A' : 'B';
+    const disp2Label = currentOrder === 'AB' ? 'B' : 'A';
+    const missing = [];
+    if (!isNasaComplete('base')) missing.push('BASE');
+    if (!isNasaComplete('disp1')) missing.push(`Dispositivo ${disp1Label}`);
+    if (!isNasaComplete('disp2')) missing.push(`Dispositivo ${disp2Label}`);
+    if (missing.length === 0) return true;
+    return confirm(`Hay ítems de NASA-TLX sin responder en: ${missing.join(', ')}.\nSi continúas, esos ítems se puntuarán como 50 (valor central) en lugar de quedar sin contestar.\n\n¿Continuar de todas formas?`);
+  }
+
+  const UMBRALES = {
+    R_max: 10, Inc_max: 50, C_max: 4,
+    UX_tiempo_obj: 15, UX_tiempo_max: 60,
+    UX_errores_max: 5
+  };
 
   function calcularCuartil(p) {
     if (p >= 75) return 'A';
@@ -527,20 +787,44 @@
     return 'D';
   }
 
-  function calcularResultados() {
+  function getUXObjetiva(prefix) {
+    const tiempo = parseFloat(document.getElementById(`${prefix}_ux_tiempo`).value) || 0;
+    const errores = parseFloat(document.getElementById(`${prefix}_ux_errores`).value) || 0;
+    const primerIntento = document.getElementById(`${prefix}_ux_primerintento`).value;
+    const continuidad = parseFloat(document.getElementById(`${prefix}_ux_continuidad`).value) || 0;
+
+    const scoreTiempo = Math.max(0, Math.min(100, 100 * (1 - (tiempo - UMBRALES.UX_tiempo_obj) / (UMBRALES.UX_tiempo_max - UMBRALES.UX_tiempo_obj))));
+    const scoreErrores = Math.max(0, 100 * (1 - errores / UMBRALES.UX_errores_max));
+    const scorePrimerIntento = primerIntento === 'si' ? 100 : 0;
+    const scoreContinuidad = Math.max(0, Math.min(100, continuidad));
+
+    const score = (scoreTiempo + scoreErrores + scorePrimerIntento + scoreContinuidad) / 4;
+    return { tiempo, errores, primerIntento, continuidad, score };
+  }
+
+  function getPhaseAvgTiempo(phase) {
+    let sum = 0;
+    const numLaps = lapsState[phase].length;
+    for (let i = 0; i < numLaps; i++) {
+      sum += parseFloat(document.getElementById(`tiempo-${phase}-${i}`).value) || 0;
+    }
+    return numLaps ? sum / numLaps : 0;
+  }
+
+  function computeDeviceResults() {
     const baseAvgs = getPhaseAverages('base');
     const baseNasa = getNasaScore('base');
 
     const evalDevice = (prefix, label) => {
       const avgs = getPhaseAverages(prefix);
-      const crs = parseFloat(document.getElementById(`${prefix}_crs`).value) || 0;
-      const subjWear = (1 - (crs / 20)) * 100;
+      const crsSum = getCRSSum(prefix);
+      const subjWear = (1 - (crsSum / 20)) * 100;
       const gestosNetos = Math.max(0, avgs.gestos - baseAvgs.gestos);
       const objWear = Math.max(0, 100 * (1 - (gestosNetos / UMBRALES.R_max)));
       const wear = (subjWear + objWear) / 2;
 
-      const wearScale = parseFloat(document.getElementById(`${prefix}_wear`).value) || 1;
-      const subjAcc = ((wearScale - 1) / 6) * 100;
+      const wearScaleAvg = getWearAvg(prefix);
+      const subjAcc = ((wearScaleAvg - 1) / 6) * 100;
       const foto = document.getElementById(`${prefix}_foto`).value;
       const acc = (foto === 'NC') ? subjAcc : (subjAcc + parseFloat(foto)) / 2;
 
@@ -551,15 +835,30 @@
       const objCog = Math.max(0, 100 * (1 - (costCol / UMBRALES.C_max)));
       const cog = (subjCog + objCog) / 2;
 
-      const sus = parseFloat(document.getElementById(`${prefix}_sus`).value) || 0;
-      const ux = (sus + 100) / 2;
-      const flag = document.getElementById(`${prefix}_flag`).checked ? " [! Bandera Piel]" : "";
+      const susScore = getSUSScore(prefix);
+      const uxObj = getUXObjetiva(prefix);
+      const ux = (susScore + uxObj.score) / 2;
 
-      return { perfil: `${calcularCuartil(wear)}${calcularCuartil(acc)}${calcularCuartil(cog)}${calcularCuartil(ux)}`, flag, wear, acc, cog, ux, label };
+      const flagPiel = document.getElementById(`${prefix}_flag`).checked;
+
+      return {
+        label, flagPiel, flag: flagPiel ? " [! Bandera Piel]" : "",
+        perfil: `${calcularCuartil(wear)}${calcularCuartil(acc)}${calcularCuartil(cog)}${calcularCuartil(ux)}`,
+        wear, acc, cog, ux,
+        crsSum, wearScaleAvg, susScore, foto,
+        nasa, incNasa, gestosTotales: avgs.gestos, gestosNetos,
+        avgsColores: avgs.colores, costCol,
+        uxTiempo: uxObj.tiempo, uxErrores: uxObj.errores, uxPrimerIntento: uxObj.primerIntento, uxContinuidad: uxObj.continuidad
+      };
     };
 
-    let resA = evalDevice(currentOrder === 'AB' ? 'disp1' : 'disp2', 'A');
-    let resB = evalDevice(currentOrder === 'AB' ? 'disp2' : 'disp1', 'B');
+    const resA = evalDevice(currentOrder === 'AB' ? 'disp1' : 'disp2', 'A');
+    const resB = evalDevice(currentOrder === 'AB' ? 'disp2' : 'disp1', 'B');
+    return { baseAvgs, baseNasa, resA, resB };
+  }
+
+  function calcularResultados() {
+    const { resA, resB } = computeDeviceResults();
 
     document.getElementById('res_perfil_a').innerText = resA.perfil + resA.flag;
     document.getElementById('res_detalles_a').innerText = `W: ${resA.wear.toFixed(1)} | A: ${resA.acc.toFixed(1)} | C: ${resA.cog.toFixed(1)} | U: ${resA.ux.toFixed(1)}`;
@@ -567,8 +866,110 @@
     document.getElementById('res_detalles_b').innerText = `W: ${resB.wear.toFixed(1)} | A: ${resB.acc.toFixed(1)} | C: ${resB.cog.toFixed(1)} | U: ${resB.ux.toFixed(1)}`;
   }
 
-  function guardarParticipante() { alert("Participante guardado. No olvides Exportar a CSV al finalizar."); }
-  function exportarCSV() { alert("Función lista para procesar los datos introducidos."); }
+  function irAResumen() {
+    if (!checkNasaCompleteness()) return;
+    goToStep(5);
+    calcularResultados();
+  }
+
+  // --- GUARDADO Y EXPORTACIÓN ---
+
+  let participantesGuardados = [];
+  try {
+    participantesGuardados = JSON.parse(localStorage.getItem('wai_participantes') || '[]');
+  } catch (e) {
+    participantesGuardados = [];
+  }
+
+  function recopilarDatosParticipante() {
+    const { baseAvgs, baseNasa, resA, resB } = computeDeviceResults();
+
+    const row = {
+      id: document.getElementById('p_id').value,
+      fecha: document.getElementById('p_fecha').value,
+      observador: document.getElementById('p_obs').value,
+      edad: document.getElementById('p_edad').value,
+      genero: document.getElementById('p_genero').value,
+      mano: document.getElementById('p_mano').value,
+      experiencia_wearables: (document.querySelector('input[name="p_exp"]:checked') || {}).value || '',
+      orden: currentOrder,
+      nombre_a: document.getElementById('name_a').value,
+      nombre_b: document.getElementById('name_b').value,
+      base_n_vueltas: lapsState.base.length,
+      base_gestos: baseAvgs.gestos,
+      base_colores_aciertos_media: baseAvgs.colores.toFixed(2),
+      base_tiempo_medio_seg: getPhaseAvgTiempo('base').toFixed(2),
+      base_nasa: baseNasa.toFixed(2)
+    };
+
+    const addDeviceCols = (res, tag, phase) => {
+      row[`${tag}_perfil`] = res.perfil;
+      row[`${tag}_flag_piel`] = res.flagPiel ? 'Sí' : 'No';
+      row[`${tag}_wearability`] = res.wear.toFixed(1);
+      row[`${tag}_acceptance`] = res.acc.toFixed(1);
+      row[`${tag}_cognition`] = res.cog.toFixed(1);
+      row[`${tag}_ux`] = res.ux.toFixed(1);
+      row[`${tag}_crs_sum`] = res.crsSum;
+      row[`${tag}_wear_scale_media`] = res.wearScaleAvg.toFixed(2);
+      row[`${tag}_sus_score`] = res.susScore.toFixed(1);
+      row[`${tag}_foto_permiso`] = res.foto;
+      row[`${tag}_nasa`] = res.nasa.toFixed(2);
+      row[`${tag}_nasa_incremento`] = res.incNasa.toFixed(2);
+      row[`${tag}_n_vueltas`] = lapsState[phase].length;
+      row[`${tag}_gestos_totales`] = res.gestosTotales;
+      row[`${tag}_gestos_netos`] = res.gestosNetos;
+      row[`${tag}_colores_aciertos_media`] = res.avgsColores.toFixed(2);
+      row[`${tag}_coste_recuerdo`] = res.costCol.toFixed(2);
+      row[`${tag}_tiempo_medio_seg`] = getPhaseAvgTiempo(phase).toFixed(2);
+      row[`${tag}_ux_tiempo_colocacion_seg`] = res.uxTiempo;
+      row[`${tag}_ux_errores_colocacion`] = res.uxErrores;
+      row[`${tag}_ux_senal_primer_intento`] = res.uxPrimerIntento;
+      row[`${tag}_ux_continuidad_senal_pct`] = res.uxContinuidad;
+    };
+    addDeviceCols(resA, 'A', currentOrder === 'AB' ? 'disp1' : 'disp2');
+    addDeviceCols(resB, 'B', currentOrder === 'AB' ? 'disp2' : 'disp1');
+
+    return row;
+  }
+
+  function guardarParticipante() {
+    if (!document.getElementById('p_id').value) {
+      alert('Introduce el ID de participante antes de guardar.');
+      return;
+    }
+    if (!checkNasaCompleteness()) return;
+    calcularResultados();
+    const row = recopilarDatosParticipante();
+    participantesGuardados.push(row);
+    localStorage.setItem('wai_participantes', JSON.stringify(participantesGuardados));
+    alert(`Participante ${row.id} guardado (${participantesGuardados.length} en total en este navegador). Usa "Exportar CSV" para descargar los datos.`);
+  }
+
+  function exportarCSV() {
+    if (participantesGuardados.length === 0) {
+      alert('No hay participantes guardados todavía.');
+      return;
+    }
+    const allKeys = new Set();
+    participantesGuardados.forEach(r => Object.keys(r).forEach(k => allKeys.add(k)));
+    const cols = Array.from(allKeys);
+    const escape = (v) => `"${String(v === undefined || v === null ? '' : v).replace(/"/g, '""')}"`;
+
+    let csv = cols.map(escape).join(';') + '\n';
+    participantesGuardados.forEach(row => {
+      csv += cols.map(c => escape(row[c])).join(';') + '\n';
+    });
+
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `WAI_participantes_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 </script>
 </body>
 </html>
